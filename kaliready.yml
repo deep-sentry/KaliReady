@@ -1,0 +1,64 @@
+---
+- name: KaliReady Setup
+  hosts: localhost
+  become: yes
+
+  tasks:
+    - name: Update and upgrade apt packages
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: Install additional applications and dependencies
+      apt:
+        name:
+          - git
+          - ruby
+          - python3
+          - python3-pip
+          - libcurl4-openssl-dev
+          - libssl-dev
+          - jq
+          - flameshot
+          - gitleaks 
+          - sublist3r
+        state: present
+
+    - name: Install gitrob
+      gem:
+        name: gitrob
+        state: present
+
+    - name: Clone SecLists repository
+      git:
+        repo: 'https://github.com/danielmiessler/SecLists.git'
+        dest: /opt/SecLists
+
+    - name: Verify gitrob installation
+      command: gitrob --version
+      register: gitrob_version
+
+    - name: Verify sublist3r installation
+      command: sublist3r --version
+      register: sublist3r_version
+
+    - name: Verify flameshot installation
+      command: flameshot --version
+      register: flameshot_version
+    
+    - name: Verify gitleaks installation
+      command: gitleaks --version
+      register: gitleaks_version
+       
+
+    - debug:
+        msg: "Gitrob version: {{ gitrob_version.stdout }}"
+    
+    - debug:
+        msg: "Sublist3r version: {{ sublist3r_version.stdout }}"
+    
+    - debug:
+        msg: "Flameshot version: {{ flameshot_version.stdout }}"
+    
+    - debug:
+        msg: "Gitleaks version: {{ gitleaks_version.stdout }}" 
