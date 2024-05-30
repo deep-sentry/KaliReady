@@ -10,7 +10,7 @@
         upgrade: dist
   
    # Install Firfox Add-ons
-   - name: Install FoxyProxy
+    - name: Install FoxyProxy
       firefox_addon:
         addon_id: foxyproxy-standard@eric.h.jung
         state: present
@@ -20,6 +20,19 @@
         addon_id: wappalyzer@crunchlabz.com
         state: present
         
+    - name: Copy bookmarks JSON file
+      copy:
+        src: /path/to/bookmarks.json
+        dest: /usr/lib/firefox/distribution/extensions/bookmarks.json
+
+    - name: Create user.js file to import bookmarks
+      copy:
+        dest: /path/to/firefox/profile/user.js
+        content: |
+          user_pref("browser.bookmarks.restore_default_bookmarks", false);
+          user_pref("browser.bookmarks.added_static_root", true);
+          user_pref("browser.bookmarks.defaultLocation", "/usr/lib/firefox/distribution/extensions/bookmarks.json");
+
     - name: Install additional applications and dependencies
       apt:
         name:
