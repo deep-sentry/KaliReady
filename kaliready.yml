@@ -8,7 +8,18 @@
       apt:
         update_cache: yes
         upgrade: dist
+  
+   # Install Firfox Add-ons
+   - name: Install FoxyProxy
+      firefox_addon:
+        addon_id: foxyproxy-standard@eric.h.jung
+        state: present
 
+    - name: Install Wappalyzer
+      firefox_addon:
+        addon_id: wappalyzer@crunchlabz.com
+        state: present
+        
     - name: Install additional applications and dependencies
       apt:
         name:
@@ -20,9 +31,26 @@
           - libssl-dev
           - jq
           - flameshot
-          - gitleaks 
+          - gitleaks
+          - gobuster
           - sublist3r
         state: present
+        
+    # Download and install Nessus
+    - name: Download Nessus
+      get_url:
+        url: https://www.tenable.com/downloads/api/v1/public/pages/nessus/downloads/14241/download?i_agree_to_tenable_license_agreement=true
+        dest: /tmp/Nessus.deb
+
+    - name: Install Nessus
+      apt:
+        deb: /tmp/Nessus.deb
+
+    - name: Enable and start Nessus service
+      systemd:
+        name: nessusd
+        enabled: yes
+        state: started
 
     - name: Install gitrob
       gem:
@@ -49,7 +77,14 @@
     - name: Verify gitleaks installation
       command: gitleaks --version
       register: gitleaks_version
-       
+
+    - name: Verify gobuster installation
+      command: gobuster -V
+      register: gobuster_version  
+
+    - name: Verify Nessus installation
+      command: /opt/nessus/sbin/nessusd -v
+      register: nessus_version
 
     - debug:
         msg: "Gitrob version: {{ gitrob_version.stdout }}"
@@ -62,3 +97,9 @@
     
     - debug:
         msg: "Gitleaks version: {{ gitleaks_version.stdout }}" 
+
+    - debug:
+        msg: "Gobuster version is {{ gobuster_version.stdout }}"      
+
+    - debug:
+        msg: "Nessus version is {{ nessus_version.stdout }}"
