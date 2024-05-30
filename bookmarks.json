@@ -1,0 +1,13 @@
+{
+  "title": "Bookmarks",
+  "children": [
+    {
+      "title": "My Bookmark",
+      "uri": "http://example.com"
+    },
+    {
+      "title": "Another Bookmark",
+      "uri": "http://another-example.com"
+    }
+  ]
+}
